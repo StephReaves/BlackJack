@@ -1,0 +1,141 @@
+// Card Constructor 
+function Card(suit, number) {
+    this.suit = suit;
+    this.number = number;
+    
+    this.getSuit = function() {
+        return this.suit;
+    };
+    
+    this.getNumber = function() {
+        return this.number;
+    };
+    
+    this.getValue = function() {
+        //if number is a face card then the value is 10
+        //if the number is an ace then give a value of 11
+        //otherwise the value is just the number
+        if (number % 13 > 10 || number % 13 === 0) {
+                return 10;
+            } else if (number % 13 ===1){
+                return 11;
+            } else  {
+                return number % 13;
+            }
+        };
+        
+}
+//new card Object with random number and suit
+// suit between 1 and 4 and number between 1 and 13
+var deal = function(){
+        var randNum = Math.floor(Math.random() * 13 + 1);
+        var randSuit = Math.floor(Math.random() * 4 + 1);
+        return new Card(randSuit, randNum);
+};
+
+// Hand Constructor 
+function Hand(){
+    //cards initially empty array
+    //deals to cards with deal method
+    var cards = [];
+    var card1 = deal();
+    var card2 = deal();
+    cards.push(card1);
+    cards.push(card2);
+    
+    this.getHand = function() {
+    return cards;
+    };
+    
+    
+     this.score = function() {
+        var score = 0;
+        var ace = 0;
+        for (i = 0; i < cards.length; i++) {
+            //checking for aces
+            if (cards[i].getValue() === 11)  {
+                ace++;
+            }
+            //add card value to the score
+            score += cards[i].getValue(); }
+            while (score > 21 && ace > 0){
+            score -= 10;
+            ace--; }
+            
+        return score;
+        };
+        
+    
+
+    //shows the hand 
+    this.printHand = function() {
+    //lopping through adding suit and value to string    
+    var string = "";
+    for(i = 0 ; i < cards.length; i += 1){
+
+        string += cards[i].getNumber() + 
+            " of " + cards[i].getSuit();
+
+        // Check if current item is the last item in 
+        // and, if not, add the comma and space
+        if(i < cards.length - 1){
+            string += ", ";
+        }
+    }
+    return string;
+    };
+    
+    this.hitMe = function() {
+        var newCard = deal();
+        //adds the card to the array
+        cards.push(newCard);
+    };
+
+}
+
+function playAsDealer() {
+    //creates hand and hits until above 17
+    var dealerHand = new Hand();
+    while (dealerHand.score() < 17) {
+        dealerHand.hitMe();
+    }
+    return dealerHand;
+}
+
+function playAsUser() {
+    var userHand = new Hand();
+    //using confirm w/ variable to see if user wants another card
+    var decision = true;
+    while (decision === true) {
+    decision = confirm("Your hand is" + userHand.printHand() + "Your hand has a score of" + userHand.score() + "Do you want another card?");
+    if (decision === true) {
+    userHand.hitMe();
+    }
+    }
+    return userHand;
+}
+
+function declareWinner(userHand, dealerHand) {
+    //checking for winner based on score
+    var user = userHand.score();
+    var dealer = dealerHand.score();
+    if((user > dealer || dealer > 21) && user <=21) {
+        return "You win!";
+        
+    }
+    else if ((user < dealer || user > 21) && dealer <= 21) {
+        return "You lose!";
+    } else {
+        return "You tied!";
+    }
+    }
+
+
+var playGame = function() {
+    var theUser = playAsUser();
+    var theDealer = playAsDealer();
+    var result = declareWinner(theUser, theDealer);
+console.log("You earned: "+theUser.score()+"\n"+"Dealer earned: "+ theDealer.score()+"\n"+"So the result is: "+result+"\n"+"Congratualtion!!!");
+};
+
+playGame();
